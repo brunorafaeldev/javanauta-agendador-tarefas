@@ -21,7 +21,7 @@ public class TarefasEntity {
     private String id;
     private String nomeTarefa;
     private String descricaoTarefa;
-    private LocalDateTime dataCricaoTarefa;
+    private LocalDateTime dataCriacaoTarefa;
     private LocalDateTime dataEvento;
     private String emailUsuario;
     private LocalDateTime dataAlteracaoTarefa;
