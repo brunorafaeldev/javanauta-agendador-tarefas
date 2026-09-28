@@ -1,6 +1,7 @@
 package com.javanauta_agendador_tarefas.infrastructure.repository;
 
 import com.javanauta_agendador_tarefas.infrastructure.entity.TarefasEntity;
+import com.javanauta_agendador_tarefas.infrastructure.enums.StatusNotificacaoEnum;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +13,9 @@ import java.util.List;
 public interface TarefasRepository extends MongoRepository<TarefasEntity, String> {
 
 
-        List<TarefasEntity> findByDataEventoBetween(LocalDateTime dataInicial, LocalDateTime dataFinal);
+        List<TarefasEntity> findByDataEventoBetweenAndStatusNotificacaoEnum (LocalDateTime dataInicial,
+                                                                          LocalDateTime dataFinal,
+                                                                          StatusNotificacaoEnum status);
         List<TarefasEntity> findByEmailUsuario(String email);
 
 

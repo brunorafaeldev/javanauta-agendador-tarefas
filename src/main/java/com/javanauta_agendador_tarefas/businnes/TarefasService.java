@@ -1,7 +1,7 @@
 package com.javanauta_agendador_tarefas.businnes;
 
 
-import com.javanauta_agendador_tarefas.businnes.dto.TarefasDTO;
+import com.javanauta_agendador_tarefas.businnes.dto.TarefasDTORecord;
 import com.javanauta_agendador_tarefas.businnes.mapper.TarefaUpdateConverter;
 import com.javanauta_agendador_tarefas.businnes.mapper.TarefasConverter;
 import com.javanauta_agendador_tarefas.infrastructure.entity.TarefasEntity;
@@ -24,29 +24,28 @@ public class TarefasService {
     private final JwtUtil jwtUtil;
     private final TarefaUpdateConverter tarefaUpdateConverter;
 
-    public TarefasDTO gravarTarefas(String token, TarefasDTO dto) {
+    public TarefasDTORecord gravarTarefas(String token, TarefasDTORecord dto) {
 
         String email = jwtUtil.extraiEmailToken(token.substring(7));
-        dto.setDataCriacaoTarefa(LocalDateTime.now());
-        dto.setStatusNotificacaoEnum(StatusNotificacaoEnum.PENDENTE);
-        dto.setEmailUsuario(email);
+        TarefasDTORecord dtoFinal = new TarefasDTORecord(null, dto.nomeTarefa(),
+                dto.descricaoTarefa(), LocalDateTime.now(), dto.dataEvento(), email, null, StatusNotificacaoEnum.PENDENTE);
         TarefasEntity entity = tarefasConverter.paraTarefaEntity(dto);
-
-
         return tarefasConverter.paraTarefaDTO(tarefaRepository.save(entity));
 
 
     }
 
-    public List<TarefasDTO> buscaTarefasAgendadasPorPeriodo(LocalDateTime dataInicial, LocalDateTime dataFinal) {
+    public List<TarefasDTORecord> buscaTarefasAgendadasPorPeriodo(LocalDateTime dataInicial, LocalDateTime dataFinal) {
 
         return tarefasConverter.paraListaTarefaDTO
-                (tarefaRepository.findByDataEventoBetween(dataInicial, dataFinal));
+                (tarefaRepository.findByDataEventoBetweenAndStatusNotificacaoEnum(dataInicial,
+                        dataFinal,
+                        StatusNotificacaoEnum.PENDENTE));
 
 
     }
 
-    public List<TarefasDTO> buscaTarefasPorEmailUsuario(String token) {
+    public List<TarefasDTORecord> buscaTarefasPorEmailUsuario(String token) {
         String email = jwtUtil.extraiEmailToken(token.substring(7));
         List<TarefasEntity> listaTarefas = tarefaRepository.findByEmailUsuario(email);
 
@@ -61,7 +60,7 @@ public class TarefasService {
         }
     }
 
-    public TarefasDTO alteraStatusTarefa(StatusNotificacaoEnum status, String id) {
+    public TarefasDTORecord alteraStatusTarefa(StatusNotificacaoEnum status, String id) {
         try {
 
             TarefasEntity entity = tarefaRepository.findById(id)
@@ -74,7 +73,7 @@ public class TarefasService {
 
     }
 
-    public TarefasDTO updateTarefas(TarefasDTO dto, String id) {
+    public TarefasDTORecord updateTarefas(TarefasDTORecord dto, String id) {
         try {
 
             TarefasEntity entity = tarefaRepository.findById(id)
